@@ -101,3 +101,20 @@ Extension Host と Webview 間の通信:
 - セル編集時にEditオブジェクトを作成しスタックに追加
 - VSCodeのworkspace.applyEdit / Undo/Redo APIと連携
 - 保存時はndjsonSerializer.tsで全レコードをNDJSON文字列に変換
+
+## 公開情報
+
+| 項目 | 値 |
+|------|-----|
+| VS Code Marketplace | publisher: `lab-bit` / extension: `ndjson-excel-viewer` |
+| GitHub | https://github.com/lab-bit/ndjson-excel-viewer |
+| 初回公開 | 2025-02-17 (v0.1.0) |
+| 公開方法 | `npx vsce package` → https://marketplace.visualstudio.com/manage からvsixを手動アップロード |
+| PAT (vsce login) | 未解決（スコープエラーで使えず）。手動アップロードで回避中 |
+
+### バージョンアップ手順
+
+1. `package.json` の `version` を更新
+2. `CHANGELOG.md` に変更内容を追記
+3. `npm run compile && npx vsce package`
+4. https://marketplace.visualstudio.com/manage → 該当拡張 → **Update** → 新しいvsixをアップロード
