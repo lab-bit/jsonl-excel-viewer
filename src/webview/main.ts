@@ -1,0 +1,160 @@
+import 'ag-grid-community/styles/ag-grid.css';
+import 'ag-grid-community/styles/ag-theme-alpine.css';
+
+import type { ExtToWebviewMessage, WebviewToExtMessage, CellEdit, ColumnDef } from '../types';
+import { initGrid, setRowData, resetData, updateInfoBar, getGridApi, toggleInlineDetail, toggleFlatDetail, getSubtableData, toggleInlineExpandAll, toggleFlatExpandAll, setDetailSwitchHandler } from './grid';
+import { applyTheme, observeThemeChanges } from './theme';
+import { SearchController } from './search';
+import { setSubtableEditHandler, closeSubtablePanel, setInlineToggleHandler, setFlatToggleHandler, setFlatModeSwitchHandler, switchAndOpen } from './subtableRenderer';
+
+declare function acquireVsCodeApi(): {
+  postMessage(message: WebviewToExtMessage): void;
+  getState(): unknown;
+  setState(state: unknown): void;
+};
+
+const vscode = acquireVsCodeApi();
+const gridContainer = document.getElementById('grid-container')!;
+
+let searchController: SearchController;
+let totalRows = 0;
+let columns: ColumnDef[] = [];
+let initialized = false;
+const CHUNK_SIZE = 500;
+
+// Apply theme
+applyTheme(gridContainer);
+observeThemeChanges(gridContainer);
+
+// Initialize search
+searchController = new SearchController();
+
+// Wire inline expand-all button
+const inlineExpandAllBtn = document.getElementById('inline-expand-all');
+if (inlineExpandAllBtn) {
+  inlineExpandAllBtn.addEventListener('click', () => {
+    const expanded = toggleInlineExpandAll();
+    inlineExpandAllBtn.textContent = expanded ? 'Collapse All' : 'Inline All';
+    inlineExpandAllBtn.title = expanded ? 'Collapse all inline expansions' : 'Expand all subtables inline';
+    // Reset flat button state if it was active
+    const flatBtn = document.getElementById('flat-expand-all');
+    if (flatBtn) {
+      flatBtn.textContent = 'Flat All';
+      flatBtn.title = 'Expand all subtables flat';
+    }
+  });
+}
+
+// Wire flat expand-all button
+const flatExpandAllBtn = document.getElementById('flat-expand-all');
+if (flatExpandAllBtn) {
+  flatExpandAllBtn.addEventListener('click', () => {
+    const expanded = toggleFlatExpandAll();
+    flatExpandAllBtn.textContent = expanded ? 'Collapse All' : 'Flat All';
+    flatExpandAllBtn.title = expanded ? 'Collapse all flat expansions' : 'Expand all subtables flat';
+    // Reset inline button state if it was active
+    const inlineBtn = document.getElementById('inline-expand-all');
+    if (inlineBtn) {
+      inlineBtn.textContent = 'Inline All';
+      inlineBtn.title = 'Expand all subtables inline';
+    }
+  });
+}
+
+// Wire inline detail toggle: subtableRenderer → grid
+setInlineToggleHandler(toggleInlineDetail);
+
+// Wire flat detail toggle: subtableRenderer → grid
+setFlatToggleHandler(toggleFlatDetail);
+
+// Wire flat mode switch: flat row → modal
+setFlatModeSwitchHandler((parentIndex, field, targetMode) => {
+  toggleFlatDetail(parentIndex, field, []); // close flat
+  const data = getSubtableData(parentIndex, field);
+  if (data) switchAndOpen(targetMode as 'modal' | 'docked', parentIndex, field, data);
+});
+
+// Wire mode switch from inline detail row back to modal/docked/flat
+setDetailSwitchHandler((targetMode, rowIndex, field, data) => {
+  toggleInlineDetail(rowIndex, field, data); // collapse inline
+  if (targetMode === 'flat') {
+    toggleFlatDetail(rowIndex, field, data); // open flat
+  } else {
+    switchAndOpen(targetMode as 'modal' | 'docked', rowIndex, field, data);
+  }
+});
+
+// Set up subtable edit handler
+setSubtableEditHandler((rowIndex, field, subIndex, subField, oldValue, newValue) => {
+  vscode.postMessage({
+    type: 'cell-edit',
+    edit: {
+      rowIndex,
+      field: `${field}[${subIndex}].${subField}`,
+      oldValue,
+      newValue,
+    },
+  });
+});
+
+// Handle messages from Extension Host
+window.addEventListener('message', (event) => {
+  const message = event.data as ExtToWebviewMessage;
+
+  switch (message.type) {
+    case 'init': {
+      columns = message.columns;
+      totalRows = message.totalRows;
+      updateInfoBar(totalRows, columns.length);
+
+      if (!initialized) {
+        resetData();
+        const api = initGrid(gridContainer, columns, (edit: CellEdit) => {
+          vscode.postMessage({ type: 'cell-edit', edit });
+        });
+        searchController.setGridApi(api);
+        initialized = true;
+      } else {
+        // Re-init on content change (undo/redo)
+        resetData();
+        closeSubtablePanel();
+      }
+      break;
+    }
+
+    case 'data-chunk': {
+      setRowData(message.rows, message.startIndex);
+
+      // Request next chunk if more data is available
+      const nextStart = message.startIndex + message.rows.length;
+      if (nextStart < totalRows) {
+        vscode.postMessage({
+          type: 'request-chunk',
+          startIndex: nextStart,
+          count: CHUNK_SIZE,
+        });
+      }
+      break;
+    }
+
+    case 'apply-edit': {
+      const api = getGridApi();
+      if (api) {
+        const edit = message.edit;
+        const rowNode = api.getRowNode(String(edit.rowIndex));
+        if (rowNode) {
+          rowNode.setDataValue(edit.field, edit.newValue);
+        }
+      }
+      break;
+    }
+
+    case 'theme-changed': {
+      applyTheme(gridContainer);
+      break;
+    }
+  }
+});
+
+// Signal ready
+vscode.postMessage({ type: 'ready' });

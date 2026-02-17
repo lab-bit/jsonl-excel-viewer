@@ -1,0 +1,300 @@
+:root {
+  --toolbar-height: 36px;
+  --toolbar-bg: var(--vscode-editor-background);
+  --toolbar-border: var(--vscode-panel-border);
+  --input-bg: var(--vscode-input-background);
+  --input-fg: var(--vscode-input-foreground);
+  --input-border: var(--vscode-input-border);
+  --button-bg: var(--vscode-button-secondaryBackground);
+  --button-fg: var(--vscode-button-secondaryForeground);
+  --button-hover-bg: var(--vscode-button-secondaryHoverBackground);
+  --text-fg: var(--vscode-foreground);
+  --text-muted: var(--vscode-descriptionForeground);
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  font-family: var(--vscode-font-family, -apple-system, BlinkMacSystemFont, sans-serif);
+  font-size: var(--vscode-font-size, 13px);
+  color: var(--text-fg);
+  background: var(--vscode-editor-background);
+}
+
+#toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: var(--toolbar-height);
+  padding: 0 8px;
+  background: var(--toolbar-bg);
+  border-bottom: 1px solid var(--toolbar-border);
+  gap: 12px;
+}
+
+#search-container {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+#search-input {
+  width: 240px;
+  height: 24px;
+  padding: 2px 8px;
+  background: var(--input-bg);
+  color: var(--input-fg);
+  border: 1px solid var(--input-border);
+  border-radius: 2px;
+  outline: none;
+  font-size: 12px;
+}
+
+#search-input:focus {
+  border-color: var(--vscode-focusBorder);
+}
+
+#search-count {
+  font-size: 11px;
+  color: var(--text-muted);
+  min-width: 60px;
+}
+
+#search-container button {
+  width: 22px;
+  height: 22px;
+  background: var(--button-bg);
+  color: var(--button-fg);
+  border: none;
+  border-radius: 2px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+}
+
+#search-container button:hover {
+  background: var(--button-hover-bg);
+}
+
+#info-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+#inline-expand-all,
+#flat-expand-all {
+  height: 22px;
+  padding: 0 6px;
+  background: var(--button-bg);
+  color: var(--button-fg);
+  border: none;
+  border-radius: 2px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  white-space: nowrap;
+}
+
+#inline-expand-all:hover,
+#flat-expand-all:hover {
+  background: var(--button-hover-bg);
+}
+
+#grid-container {
+  width: 100%;
+  height: calc(100% - var(--toolbar-height));
+}
+
+/* AG Grid theme overrides for VSCode integration */
+.ag-theme-alpine,
+.ag-theme-alpine-dark {
+  --ag-background-color: var(--vscode-editor-background);
+  --ag-foreground-color: var(--vscode-foreground);
+  --ag-header-background-color: var(--vscode-editorGroupHeader-tabsBackground);
+  --ag-header-foreground-color: var(--vscode-foreground);
+  --ag-border-color: var(--vscode-panel-border);
+  --ag-row-hover-color: var(--vscode-list-hoverBackground);
+  --ag-selected-row-background-color: var(--vscode-list-activeSelectionBackground);
+  --ag-odd-row-background-color: transparent;
+  --ag-control-panel-background-color: var(--vscode-sideBar-background);
+  --ag-input-focus-border-color: var(--vscode-focusBorder);
+  --ag-font-family: var(--vscode-font-family);
+  --ag-font-size: 12px;
+  --ag-row-height: 28px;
+  --ag-header-height: 32px;
+}
+
+.ag-cell-inline-editing {
+  background: var(--vscode-input-background) !important;
+  color: var(--vscode-input-foreground) !important;
+}
+
+/* Subtable expand button */
+.subtable-cell {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+}
+
+.subtable-expand-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  background: var(--button-bg);
+  color: var(--button-fg);
+  border: none;
+  border-radius: 2px;
+  cursor: pointer;
+  font-size: 10px;
+}
+
+.subtable-expand-btn:hover {
+  background: var(--button-hover-bg);
+}
+
+/* Subtable modal overlay */
+.subtable-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.subtable-panel {
+  width: 80%;
+  max-width: 900px;
+  max-height: 70vh;
+  background: var(--vscode-editorWidget-background);
+  border: 1px solid var(--vscode-panel-border);
+  border-radius: 6px;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+}
+
+.subtable-panel .subtable-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.subtable-panel .subtable-grid {
+  width: 100%;
+  flex: 1;
+  min-height: 150px;
+  max-height: 50vh;
+}
+
+/* Subtable docked mode */
+body.docked-mode {
+  display: flex;
+  flex-direction: column;
+}
+
+body.docked-mode #grid-container {
+  flex: 1;
+  height: auto;
+  min-height: 200px;
+}
+
+.subtable-docked {
+  flex-shrink: 0;
+  height: 300px;
+  border-top: 2px solid var(--vscode-panel-border);
+}
+
+.subtable-panel-docked {
+  width: 100%;
+  max-width: none;
+  max-height: none;
+  height: 100%;
+  border-radius: 0;
+  box-shadow: none;
+  border: none;
+}
+
+.subtable-panel-docked .subtable-grid {
+  max-height: none;
+  flex: 1;
+  overflow: hidden;
+}
+
+/* Subtable inline detail (full-width row) */
+.subtable-inline-detail {
+  padding: 4px 8px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  background: var(--vscode-editorWidget-background);
+  border-top: 1px solid var(--vscode-panel-border);
+  border-bottom: 1px solid var(--vscode-panel-border);
+}
+
+.subtable-inline-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 4px;
+  flex-shrink: 0;
+}
+
+.subtable-inline-grid {
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+
+/* Flat detail row */
+.ag-row.flat-detail-row {
+  background-color: var(--vscode-editorWidget-background, rgba(128, 128, 128, 0.08));
+  border-left: 3px solid var(--vscode-textLink-foreground, #3794ff);
+}
+.ag-row.flat-detail-row .ag-cell {
+  color: var(--vscode-descriptionForeground, inherit);
+  font-size: 11px;
+  white-space: normal;
+  word-break: break-word;
+  line-height: 1.4;
+}
+.ag-row.flat-detail-row .subtable-cell {
+  white-space: normal;
+  word-break: break-word;
+  line-height: 1.4;
+  display: block;
+  padding: 2px 0;
+}
+
+/* Search highlight */
+.search-highlight {
+  background-color: var(--vscode-editor-findMatchHighlightBackground);
+}
+
+.search-highlight-active {
+  background-color: var(--vscode-editor-findMatchBackground);
+  outline: 1px solid var(--vscode-editor-findMatchBorder);
+}

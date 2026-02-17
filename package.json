@@ -1,0 +1,48 @@
+{
+  "name": "ndjson-excel-viewer",
+  "displayName": "NDJSON Excel Viewer",
+  "description": "View and edit NDJSON/JSONL files in a spreadsheet-like UI",
+  "version": "0.1.0",
+  "publisher": "lab-bit",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/lab-bit/ndjson-excel-viewer"
+  },
+  "categories": ["Other"],
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "main": "./dist/extension.js",
+  "activationEvents": [],
+  "contributes": {
+    "customEditors": [
+      {
+        "viewType": "ndjsonExcelViewer.editor",
+        "displayName": "NDJSON Excel Viewer",
+        "selector": [
+          { "filenamePattern": "*.ndjson" },
+          { "filenamePattern": "*.jsonl" }
+        ],
+        "priority": "default"
+      }
+    ]
+  },
+  "scripts": {
+    "compile": "node scripts/esbuild.mjs",
+    "watch": "node scripts/esbuild.mjs --watch",
+    "package": "vsce package",
+    "test": "vitest run"
+  },
+  "devDependencies": {
+    "@types/vscode": "^1.85.0",
+    "@types/node": "^20.0.0",
+    "esbuild": "^0.24.0",
+    "typescript": "^5.5.0",
+    "vitest": "^2.0.0",
+    "@vscode/vsce": "^3.0.0"
+  },
+  "dependencies": {
+    "ag-grid-community": "^32.0.0"
+  }
+}

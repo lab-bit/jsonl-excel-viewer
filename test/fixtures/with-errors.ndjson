@@ -1,0 +1,5 @@
+{"id":1,"name":"Valid"}
+not valid json
+{"id":2,"name":"Also valid"}
+
+{"id":3}
