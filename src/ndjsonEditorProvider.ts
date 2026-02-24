@@ -188,6 +188,10 @@ export class NdjsonEditorProvider
       <button id="search-next" title="Next">&#9660;</button>
     </div>
     <div id="info-bar">
+      <div id="column-picker-wrap">
+        <button id="column-picker-btn" title="Select columns to display">Columns</button>
+        <div id="column-picker-dropdown" class="column-picker-dropdown" aria-hidden="true"></div>
+      </div>
       <button id="inline-expand-all" title="Expand all subtables inline">Inline All</button>
       <button id="flat-expand-all" title="Expand all subtables flat">Flat All</button>
       <span id="row-count"></span>

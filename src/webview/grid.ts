@@ -55,6 +55,11 @@ let gridApi: GridApi | null = null;
 let allRowData: NdjsonRecord[] = [];
 let rowIndexMap = new Map<NdjsonRecord, number>();
 
+/** All column field ids in order (set at init). Used for visibility and getVisibleColumnFields. */
+let allColumnFields: string[] = [];
+/** Field ids that are currently hidden. Empty = all visible. */
+let hiddenFieldIds = new Set<string>();
+
 let expandedDetails = new Map<string, { parentOriginalIndex: number; field: string; data: Record<string, unknown>[] }>();
 let expandedFlats = new Map<string, { parentOriginalIndex: number; field: string; data: Record<string, unknown>[] }>();
 let detailGridApis = new Map<string, GridApi>();
@@ -311,11 +316,15 @@ export function getSubtableData(
 export function initGrid(
   container: HTMLElement,
   columns: ColumnDef[],
-  onCellEdit: (edit: CellEdit) => void
+  onCellEdit: (edit: CellEdit) => void,
+  initialHiddenFields?: string[]
 ): GridApi {
   subtableFields = columns.filter((c) => c.isSubtable).map((c) => c.field);
+  allColumnFields = columns.map((c) => c.field);
+  hiddenFieldIds = new Set(initialHiddenFields ?? []);
 
   const colDefs: ColDef[] = columns.map((col) => {
+    const isHidden = hiddenFieldIds.has(col.field);
     const def: ColDef = {
       field: col.field,
       headerName: col.headerName,
@@ -324,6 +333,7 @@ export function initGrid(
       filter: true,
       minWidth: 60,
       width: col.width,
+      hide: isHidden,
     };
 
     if (col.isSubtable) {
@@ -456,11 +466,61 @@ export function resetData(): void {
   rowIndexMap = new Map();
 }
 
-export function updateInfoBar(totalRows: number, totalCols: number): void {
+export function updateInfoBar(totalRows: number, totalCols: number, visibleCols?: number): void {
   const rowCountEl = document.getElementById('row-count');
   const colCountEl = document.getElementById('col-count');
   if (rowCountEl) rowCountEl.textContent = `Rows: ${totalRows}`;
-  if (colCountEl) colCountEl.textContent = `Cols: ${totalCols}`;
+  if (colCountEl) {
+    if (visibleCols !== undefined && visibleCols < totalCols) {
+      colCountEl.textContent = `Cols: ${visibleCols} / ${totalCols}`;
+    } else {
+      colCountEl.textContent = `Cols: ${totalCols}`;
+    }
+  }
+}
+
+// --- Column visibility ---
+
+export function setColumnVisibility(field: string, visible: boolean): void {
+  if (!gridApi) return;
+  if (visible) {
+    hiddenFieldIds.delete(field);
+    gridApi.setColumnsVisible([field], true);
+  } else {
+    hiddenFieldIds.add(field);
+    gridApi.setColumnsVisible([field], false);
+  }
+}
+
+export function setAllColumnsVisible(): void {
+  if (!gridApi || allColumnFields.length === 0) return;
+  hiddenFieldIds.clear();
+  gridApi.setColumnsVisible(allColumnFields, true);
+}
+
+/** Hide all columns (user can then check only the ones they want to see). */
+export function setAllColumnsHidden(): void {
+  if (!gridApi || allColumnFields.length === 0) return;
+  for (const f of allColumnFields) {
+    hiddenFieldIds.add(f);
+  }
+  gridApi.setColumnsVisible(allColumnFields, false);
+}
+
+export function resetColumnVisibility(): void {
+  setAllColumnsVisible();
+}
+
+export function getVisibleColumnFields(): string[] {
+  return allColumnFields.filter((f) => !hiddenFieldIds.has(f));
+}
+
+export function getAllColumnFields(): string[] {
+  return [...allColumnFields];
+}
+
+export function isColumnVisible(field: string): boolean {
+  return !hiddenFieldIds.has(field);
 }
 
 /** Toggle all subtable columns inline-expanded for every row. Returns new state (true=expanded). */
