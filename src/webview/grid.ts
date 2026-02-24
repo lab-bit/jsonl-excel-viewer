@@ -9,7 +9,7 @@ import {
   CsvExportModule,
   CommunityFeaturesModule,
 } from 'ag-grid-community';
-import type { ColumnDef, NdjsonRecord, CellEdit } from '../types';
+import type { ColumnDef, JsonlRecord, CellEdit } from '../types';
 import { createSubtableCellRenderer } from './subtableRenderer';
 
 ModuleRegistry.registerModules([
@@ -52,8 +52,8 @@ interface FlatDetailRowData {
 }
 
 let gridApi: GridApi | null = null;
-let allRowData: NdjsonRecord[] = [];
-let rowIndexMap = new Map<NdjsonRecord, number>();
+let allRowData: JsonlRecord[] = [];
+let rowIndexMap = new Map<JsonlRecord, number>();
 
 /** All column field ids in order (set at init). Used for visibility and getVisibleColumnFields. */
 let allColumnFields: string[] = [];
@@ -435,7 +435,7 @@ export function initGrid(
   return gridApi;
 }
 
-export function setRowData(records: NdjsonRecord[], startIndex: number): void {
+export function setRowData(records: JsonlRecord[], startIndex: number): void {
   if (!gridApi) return;
 
   // Merge chunk into allRowData

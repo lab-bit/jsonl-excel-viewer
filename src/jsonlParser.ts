@@ -1,15 +1,15 @@
-import { NdjsonRecord, ParseResult, ParseError } from './types';
+import { JsonlRecord, ParseResult, ParseError } from './types';
 
 /**
- * Parse NDJSON text into an array of records.
+ * Parse JSONL text into an array of records.
  * Handles:
  * - Empty lines (skipped)
  * - Lines with only whitespace (skipped)
  * - Invalid JSON lines (captured as errors, not thrown)
  * - BOM (stripped if present)
  */
-export function parseNdjson(text: string): ParseResult {
-  const records: NdjsonRecord[] = [];
+export function parseJsonl(text: string): ParseResult {
+  const records: JsonlRecord[] = [];
   const errors: ParseError[] = [];
 
   // Strip BOM
@@ -24,7 +24,7 @@ export function parseNdjson(text: string): ParseResult {
     try {
       const parsed = JSON.parse(line);
       if (typeof parsed === 'object' && parsed !== null && !Array.isArray(parsed)) {
-        records.push(parsed as NdjsonRecord);
+        records.push(parsed as JsonlRecord);
       } else {
         errors.push({
           line: i + 1,
@@ -45,10 +45,10 @@ export function parseNdjson(text: string): ParseResult {
 }
 
 /**
- * Parse NDJSON from a Uint8Array (file content).
+ * Parse JSONL from a Uint8Array (file content).
  */
-export function parseNdjsonFromBytes(bytes: Uint8Array): ParseResult {
+export function parseJsonlFromBytes(bytes: Uint8Array): ParseResult {
   const decoder = new TextDecoder('utf-8');
   const text = decoder.decode(bytes);
-  return parseNdjson(text);
+  return parseJsonl(text);
 }

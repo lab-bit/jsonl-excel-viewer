@@ -1,11 +1,11 @@
 import * as vscode from 'vscode';
-import { NdjsonEditorProvider } from './ndjsonEditorProvider';
+import { JsonlEditorProvider } from './jsonlEditorProvider';
 
 export function activate(context: vscode.ExtensionContext) {
   context.subscriptions.push(
     vscode.window.registerCustomEditorProvider(
-      NdjsonEditorProvider.viewType,
-      new NdjsonEditorProvider(context),
+      JsonlEditorProvider.viewType,
+      new JsonlEditorProvider(context),
       {
         webviewOptions: { retainContextWhenHidden: true },
         supportsMultipleEditorsPerDocument: false,

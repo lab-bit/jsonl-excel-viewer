@@ -1,16 +1,16 @@
 {
-  "name": "ndjson-excel-viewer",
-  "displayName": "NDJSON Excel Viewer",
-  "description": "View and edit NDJSON/JSONL files in a spreadsheet-like UI",
+  "name": "jsonl-excel-viewer",
+  "displayName": "JSONL Excel Viewer",
+  "description": "View and edit JSONL (NDJSON) files in a spreadsheet-like UI",
   "version": "0.2.0",
   "publisher": "lab-bit",
   "license": "MIT",
   "icon": "media/icon.png",
   "repository": {
     "type": "git",
-    "url": "https://github.com/lab-bit/ndjson-excel-viewer"
+    "url": "https://github.com/lab-bit/jsonl-excel-viewer"
   },
-  "keywords": ["ndjson", "jsonl", "spreadsheet", "grid", "viewer", "editor"],
+  "keywords": ["jsonl", "ndjson", "spreadsheet", "grid", "viewer", "editor"],
   "categories": ["Other"],
   "engines": {
     "vscode": "^1.85.0"
@@ -20,8 +20,8 @@
   "contributes": {
     "customEditors": [
       {
-        "viewType": "ndjsonExcelViewer.editor",
-        "displayName": "NDJSON Excel Viewer",
+        "viewType": "jsonlExcelViewer.editor",
+        "displayName": "JSONL Excel Viewer",
         "selector": [
           { "filenamePattern": "*.ndjson" },
           { "filenamePattern": "*.jsonl" }

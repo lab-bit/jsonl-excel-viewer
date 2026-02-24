@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { analyzeColumns } from '../../src/columnAnalyzer';
-import { NdjsonRecord } from '../../src/types';
+import { JsonlRecord } from '../../src/types';
 
 describe('analyzeColumns', () => {
   it('should return empty array for empty records', () => {
@@ -8,7 +8,7 @@ describe('analyzeColumns', () => {
   });
 
   it('should detect basic types', () => {
-    const records: NdjsonRecord[] = [
+    const records: JsonlRecord[] = [
       { name: 'Alice', age: 30, active: true },
     ];
     const cols = analyzeColumns(records);
@@ -25,7 +25,7 @@ describe('analyzeColumns', () => {
   });
 
   it('should detect subtables (array fields)', () => {
-    const records: NdjsonRecord[] = [
+    const records: JsonlRecord[] = [
       {
         id: '001',
         subtable_items: [{ item: 'A', qty: 1 }],
@@ -44,7 +44,7 @@ describe('analyzeColumns', () => {
   });
 
   it('should detect object fields', () => {
-    const records: NdjsonRecord[] = [
+    const records: JsonlRecord[] = [
       { id: 1, metadata: { key: 'val' } },
     ];
     const cols = analyzeColumns(records);
@@ -54,7 +54,7 @@ describe('analyzeColumns', () => {
   });
 
   it('should union keys from all records', () => {
-    const records: NdjsonRecord[] = [
+    const records: JsonlRecord[] = [
       { a: 1, b: 2 },
       { b: 3, c: 4 },
       { a: 5, d: 6 },
@@ -69,7 +69,7 @@ describe('analyzeColumns', () => {
   });
 
   it('should handle null values', () => {
-    const records: NdjsonRecord[] = [
+    const records: JsonlRecord[] = [
       { name: 'Alice', age: null },
       { name: 'Bob', age: 25 },
     ];
@@ -79,7 +79,7 @@ describe('analyzeColumns', () => {
   });
 
   it('should treat mixed types as string', () => {
-    const records: NdjsonRecord[] = [
+    const records: JsonlRecord[] = [
       { value: 'text' },
       { value: 42 },
     ];
@@ -89,7 +89,7 @@ describe('analyzeColumns', () => {
   });
 
   it('should handle all-null columns as unknown', () => {
-    const records: NdjsonRecord[] = [
+    const records: JsonlRecord[] = [
       { x: null },
       { x: null },
     ];
@@ -98,7 +98,7 @@ describe('analyzeColumns', () => {
   });
 
   it('should preserve field order from first record', () => {
-    const records: NdjsonRecord[] = [
+    const records: JsonlRecord[] = [
       { first: 1, second: 2, third: 3 },
     ];
     const cols = analyzeColumns(records);

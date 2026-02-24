@@ -1,10 +1,10 @@
-import { NdjsonRecord, ColumnDef, ColumnType } from './types';
+import { JsonlRecord, ColumnDef, ColumnType } from './types';
 
 /**
  * Analyze records to generate AG Grid column definitions.
  * Scans all records to union all keys and infer types.
  */
-export function analyzeColumns(records: NdjsonRecord[]): ColumnDef[] {
+export function analyzeColumns(records: JsonlRecord[]): ColumnDef[] {
   if (records.length === 0) return [];
 
   // Collect all unique keys and their value samples

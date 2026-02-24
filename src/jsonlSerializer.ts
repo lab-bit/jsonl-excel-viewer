@@ -1,18 +1,18 @@
-import { NdjsonRecord } from './types';
+import { JsonlRecord } from './types';
 
 /**
- * Serialize an array of records to NDJSON text.
+ * Serialize an array of records to JSONL text.
  * Each record is a single line of JSON, with a trailing newline.
  */
-export function serializeNdjson(records: NdjsonRecord[]): string {
+export function serializeJsonl(records: JsonlRecord[]): string {
   return records.map(record => JSON.stringify(record)).join('\n') + '\n';
 }
 
 /**
  * Serialize records to Uint8Array for file writing.
  */
-export function serializeNdjsonToBytes(records: NdjsonRecord[]): Uint8Array {
-  const text = serializeNdjson(records);
+export function serializeJsonlToBytes(records: JsonlRecord[]): Uint8Array {
+  const text = serializeJsonl(records);
   const encoder = new TextEncoder();
   return encoder.encode(text);
 }

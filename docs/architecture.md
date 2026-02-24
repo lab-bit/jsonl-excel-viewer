@@ -1,4 +1,4 @@
-# NDJSON Excel Viewer - アーキテクチャドキュメント
+# JSONL Excel Viewer - アーキテクチャドキュメント
 
 ## 技術選定と理由
 
@@ -13,7 +13,7 @@
 ## プロジェクト構造
 
 ```
-ndjson-excel-viewer/
+jsonl-excel-viewer/
 ├── .vscode/
 │   ├── launch.json
 │   └── tasks.json
@@ -22,10 +22,10 @@ ndjson-excel-viewer/
 │   └── todo/
 ├── src/
 │   ├── extension.ts
-│   ├── ndjsonEditorProvider.ts
-│   ├── ndjsonDocument.ts
-│   ├── ndjsonParser.ts
-│   ├── ndjsonSerializer.ts
+│   ├── jsonlEditorProvider.ts
+│   ├── jsonlDocument.ts
+│   ├── jsonlParser.ts
+│   ├── jsonlSerializer.ts
 │   ├── columnAnalyzer.ts
 │   ├── types.ts
 │   └── webview/
@@ -41,8 +41,8 @@ ndjson-excel-viewer/
 ├── data/
 ├── test/
 │   ├── suite/
-│   │   ├── ndjsonParser.test.ts
-│   │   ├── ndjsonSerializer.test.ts
+│   │   ├── jsonlParser.test.ts
+│   │   ├── jsonlSerializer.test.ts
 │   │   └── columnAnalyzer.test.ts
 │   └── fixtures/
 ├── package.json
@@ -55,12 +55,12 @@ ndjson-excel-viewer/
 ## データフロー図
 
 ```
-[.ndjsonファイル]
+[.jsonl / .ndjson ファイル]
       │
       ▼ 読み込み
 [Extension Host]
-  ndjsonParser.ts     ── vscode.workspace.fs.readFile → JSON.parse
-  ndjsonDocument.ts   ── レコード配列保持、変更追跡、Undo/Redo
+  jsonlParser.ts      ── vscode.workspace.fs.readFile → JSON.parse
+  jsonlDocument.ts    ── レコード配列保持、変更追跡、Undo/Redo
   columnAnalyzer.ts   ── カラム定義生成
       │
       │ postMessage (500行チャンク)
@@ -71,11 +71,11 @@ ndjson-excel-viewer/
       │ cell-edit イベント
       ▼
 [Extension Host]
-  ndjsonDocument.ts   ── Editスタック記録、dirty通知
+  jsonlDocument.ts    ── Editスタック記録、dirty通知
       │
       │ Ctrl+S
       ▼
-  ndjsonSerializer.ts ── NDJSON文字列化 → ファイル保存
+  jsonlSerializer.ts  ── JSONL文字列化 → ファイル保存
 ```
 
 ## メッセージングプロトコル
@@ -97,17 +97,17 @@ Extension Host と Webview 間の通信:
 
 ## 編集・保存・Undo/Redoの設計
 
-- NdjsonDocument が変更履歴スタック（edits[]）を管理
+- JsonlDocument が変更履歴スタック（edits[]）を管理
 - セル編集時にEditオブジェクトを作成しスタックに追加
 - VSCodeのworkspace.applyEdit / Undo/Redo APIと連携
-- 保存時はndjsonSerializer.tsで全レコードをNDJSON文字列に変換
+- 保存時はjsonlSerializer.tsで全レコードをJSONL文字列に変換
 
 ## 公開情報
 
 | 項目 | 値 |
 |------|-----|
-| VS Code Marketplace | publisher: `lab-bit` / extension: `ndjson-excel-viewer` |
-| GitHub | https://github.com/lab-bit/ndjson-excel-viewer |
+| VS Code Marketplace | publisher: `lab-bit` / extension: `jsonl-excel-viewer` |
+| GitHub | https://github.com/lab-bit/jsonl-excel-viewer |
 | 初回公開 | 2025-02-17 (v0.1.0) |
 | 公開方法 | `npx vsce package` → https://marketplace.visualstudio.com/manage からvsixを手動アップロード |
 | PAT (vsce login) | 未解決（スコープエラーで使えず）。手動アップロードで回避中 |

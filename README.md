@@ -1,10 +1,10 @@
-# NDJSON Excel Viewer
+# JSONL Excel Viewer
 
-A VS Code extension that lets you view and edit NDJSON / JSONL files in a spreadsheet-like grid powered by [AG Grid](https://www.ag-grid.com/).
+A VS Code extension that lets you view and edit JSONL (and legacy `.ndjson`) files in a spreadsheet-like grid powered by [AG Grid](https://www.ag-grid.com/).
 
 ## Features
 
-- **Spreadsheet UI** -- Open `.ndjson` or `.jsonl` files and browse them as a sortable, filterable, resizable grid.
+- **Spreadsheet UI** -- Open `.jsonl` or `.ndjson` files and browse them as a sortable, filterable, resizable grid.
 - **Inline editing** -- Click a cell to edit values. Changes are saved back to the original file with full Undo / Redo support.
 - **Subtable expansion** -- Nested arrays of objects (sub-tables) can be viewed in four modes:
   | Mode | Description |
@@ -22,13 +22,13 @@ A VS Code extension that lets you view and edit NDJSON / JSONL files in a spread
 
 | Extension | MIME |
 |-----------|------|
-| `.ndjson` | `application/x-ndjson` |
 | `.jsonl`  | `application/jsonl` |
+| `.ndjson` | `application/x-ndjson` (legacy, supported) |
 
 ## Getting started
 
 1. Install the extension from the VS Code Marketplace.
-2. Open any `.ndjson` or `.jsonl` file -- the grid editor opens automatically.
+2. Open any `.jsonl` or `.ndjson` file -- the grid editor opens automatically.
 3. Click the `>` button in a subtable cell to expand it. Use the mode-cycle buttons to switch between Modal, Docked, Inline, and Flat views.
 4. Edit cells directly. Press `Ctrl+S` / `Cmd+S` to save.
 

@@ -1,10 +1,10 @@
 import * as vscode from 'vscode';
-import { NdjsonRecord, CellEdit } from './types';
-import { parseNdjson } from './ndjsonParser';
-import { serializeNdjson } from './ndjsonSerializer';
+import { JsonlRecord, CellEdit } from './types';
+import { parseJsonl } from './jsonlParser';
+import { serializeJsonl } from './jsonlSerializer';
 
-export class NdjsonDocument implements vscode.CustomDocument {
-  private _records: NdjsonRecord[] = [];
+export class JsonlDocument implements vscode.CustomDocument {
+  private _records: JsonlRecord[] = [];
   private _editStack: CellEdit[] = [];
   private _savedEditIndex = 0;
   private _currentEditIndex = 0;
@@ -19,8 +19,8 @@ export class NdjsonDocument implements vscode.CustomDocument {
   private readonly _onDidChangeContent = new vscode.EventEmitter<void>();
   public readonly onDidChangeContent = this._onDidChangeContent.event;
 
-  static async create(uri: vscode.Uri): Promise<NdjsonDocument> {
-    const doc = new NdjsonDocument(uri);
+  static async create(uri: vscode.Uri): Promise<JsonlDocument> {
+    const doc = new JsonlDocument(uri);
     await doc._load();
     return doc;
   }
@@ -31,21 +31,21 @@ export class NdjsonDocument implements vscode.CustomDocument {
     const data = await vscode.workspace.fs.readFile(this.uri);
     const decoder = new TextDecoder('utf-8');
     const text = decoder.decode(data);
-    const result = parseNdjson(text);
+    const result = parseJsonl(text);
     this._records = result.records;
 
     if (result.errors.length > 0) {
       const errorLines = result.errors.map(e => `Line ${e.line}: ${e.message}`).join('\n');
       vscode.window.showWarningMessage(
-        `NDJSON parse warnings: ${result.errors.length} line(s) skipped. Check Output for details.`
+        `JSONL parse warnings: ${result.errors.length} line(s) skipped. Check Output for details.`
       );
-      const channel = vscode.window.createOutputChannel('NDJSON Excel Viewer');
+      const channel = vscode.window.createOutputChannel('JSONL Excel Viewer');
       channel.appendLine(`Parse errors in ${this.uri.fsPath}:`);
       channel.appendLine(errorLines);
     }
   }
 
-  get records(): NdjsonRecord[] {
+  get records(): JsonlRecord[] {
     return this._records;
   }
 
@@ -90,14 +90,14 @@ export class NdjsonDocument implements vscode.CustomDocument {
   }
 
   async save(cancellation?: vscode.CancellationToken): Promise<void> {
-    const text = serializeNdjson(this._records);
+    const text = serializeJsonl(this._records);
     const encoder = new TextEncoder();
     await vscode.workspace.fs.writeFile(this.uri, encoder.encode(text));
     this._savedEditIndex = this._currentEditIndex;
   }
 
   async saveAs(targetUri: vscode.Uri): Promise<void> {
-    const text = serializeNdjson(this._records);
+    const text = serializeJsonl(this._records);
     const encoder = new TextEncoder();
     await vscode.workspace.fs.writeFile(targetUri, encoder.encode(text));
     this._savedEditIndex = this._currentEditIndex;

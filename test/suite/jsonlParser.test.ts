@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { readFileSync } from 'fs';
 import { join } from 'path';
-import { parseNdjson } from '../../src/ndjsonParser';
+import { parseJsonl } from '../../src/jsonlParser';
 
 const fixturesDir = join(__dirname, '..', 'fixtures');
 
@@ -9,9 +9,9 @@ function readFixture(name: string): string {
   return readFileSync(join(fixturesDir, name), 'utf-8');
 }
 
-describe('parseNdjson', () => {
-  it('should parse simple NDJSON', () => {
-    const result = parseNdjson(readFixture('simple.ndjson'));
+describe('parseJsonl', () => {
+  it('should parse simple JSONL', () => {
+    const result = parseJsonl(readFixture('simple.ndjson'));
     expect(result.records).toHaveLength(3);
     expect(result.errors).toHaveLength(0);
     expect(result.records[0]).toEqual({ id: 1, name: 'Alice', age: 30 });
@@ -19,7 +19,7 @@ describe('parseNdjson', () => {
   });
 
   it('should handle errors gracefully', () => {
-    const result = parseNdjson(readFixture('with-errors.ndjson'));
+    const result = parseJsonl(readFixture('with-errors.ndjson'));
     expect(result.records).toHaveLength(3);
     expect(result.errors).toHaveLength(1);
     expect(result.errors[0].line).toBe(2);
@@ -27,26 +27,26 @@ describe('parseNdjson', () => {
   });
 
   it('should skip empty lines', () => {
-    const result = parseNdjson(readFixture('with-errors.ndjson'));
+    const result = parseJsonl(readFixture('with-errors.ndjson'));
     // Line 4 is empty - should be skipped, not counted as error
     expect(result.errors).toHaveLength(1);
   });
 
   it('should handle empty file', () => {
-    const result = parseNdjson(readFixture('empty.ndjson'));
+    const result = parseJsonl(readFixture('empty.ndjson'));
     expect(result.records).toHaveLength(0);
     expect(result.errors).toHaveLength(0);
   });
 
   it('should handle BOM', () => {
-    const result = parseNdjson(readFixture('with-bom.ndjson'));
+    const result = parseJsonl(readFixture('with-bom.ndjson'));
     expect(result.records).toHaveLength(2);
     expect(result.errors).toHaveLength(0);
     expect(result.records[0]).toEqual({ id: 1, name: 'BOM test' });
   });
 
   it('should parse records with subtables', () => {
-    const result = parseNdjson(readFixture('with-subtables.ndjson'));
+    const result = parseJsonl(readFixture('with-subtables.ndjson'));
     expect(result.records).toHaveLength(2);
     expect(result.errors).toHaveLength(0);
     expect(result.records[0].subtable_items).toEqual([
@@ -56,7 +56,7 @@ describe('parseNdjson', () => {
   });
 
   it('should reject non-object JSON values', () => {
-    const result = parseNdjson('"just a string"\n42\n[1,2,3]');
+    const result = parseJsonl('"just a string"\n42\n[1,2,3]');
     expect(result.records).toHaveLength(0);
     expect(result.errors).toHaveLength(3);
   });

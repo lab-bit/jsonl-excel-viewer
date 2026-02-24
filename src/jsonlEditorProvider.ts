@@ -1,17 +1,17 @@
 import * as vscode from 'vscode';
-import { NdjsonDocument } from './ndjsonDocument';
+import { JsonlDocument } from './jsonlDocument';
 import { analyzeColumns } from './columnAnalyzer';
-import { ColumnDef, NdjsonRecord, WebviewToExtMessage } from './types';
+import { ColumnDef, JsonlRecord, WebviewToExtMessage } from './types';
 
 const CHUNK_SIZE = 500;
 
-export class NdjsonEditorProvider
-  implements vscode.CustomEditorProvider<NdjsonDocument>
+export class JsonlEditorProvider
+  implements vscode.CustomEditorProvider<JsonlDocument>
 {
-  public static readonly viewType = 'ndjsonExcelViewer.editor';
+  public static readonly viewType = 'jsonlExcelViewer.editor';
 
   private readonly _onDidChangeCustomDocument = new vscode.EventEmitter<
-    vscode.CustomDocumentEditEvent<NdjsonDocument>
+    vscode.CustomDocumentEditEvent<JsonlDocument>
   >();
   public readonly onDidChangeCustomDocument =
     this._onDidChangeCustomDocument.event;
@@ -22,8 +22,8 @@ export class NdjsonEditorProvider
     uri: vscode.Uri,
     _openContext: vscode.CustomDocumentOpenContext,
     _token: vscode.CancellationToken
-  ): Promise<NdjsonDocument> {
-    const document = await NdjsonDocument.create(uri);
+  ): Promise<JsonlDocument> {
+    const document = await JsonlDocument.create(uri);
 
     // Forward document change events to VSCode
     document.onDidChange((e) => {
@@ -37,7 +37,7 @@ export class NdjsonEditorProvider
   }
 
   async resolveCustomEditor(
-    document: NdjsonDocument,
+    document: JsonlDocument,
     webviewPanel: vscode.WebviewPanel,
     _token: vscode.CancellationToken
   ): Promise<void> {
@@ -94,14 +94,14 @@ export class NdjsonEditorProvider
   }
 
   async saveCustomDocument(
-    document: NdjsonDocument,
+    document: JsonlDocument,
     cancellation: vscode.CancellationToken
   ): Promise<void> {
     await document.save(cancellation);
   }
 
   async saveCustomDocumentAs(
-    document: NdjsonDocument,
+    document: JsonlDocument,
     destination: vscode.Uri,
     cancellation: vscode.CancellationToken
   ): Promise<void> {
@@ -109,14 +109,14 @@ export class NdjsonEditorProvider
   }
 
   async revertCustomDocument(
-    document: NdjsonDocument,
+    document: JsonlDocument,
     cancellation: vscode.CancellationToken
   ): Promise<void> {
     await document.revert();
   }
 
   async backupCustomDocument(
-    document: NdjsonDocument,
+    document: JsonlDocument,
     context: vscode.CustomDocumentBackupContext,
     cancellation: vscode.CancellationToken
   ): Promise<vscode.CustomDocumentBackup> {
@@ -125,7 +125,7 @@ export class NdjsonEditorProvider
 
   private _sendInitData(
     webview: vscode.Webview,
-    document: NdjsonDocument
+    document: JsonlDocument
   ): void {
     const records = document.records;
     const columns = analyzeColumns(records);
@@ -143,7 +143,7 @@ export class NdjsonEditorProvider
 
   private _sendChunk(
     webview: vscode.Webview,
-    document: NdjsonDocument,
+    document: JsonlDocument,
     startIndex: number,
     count: number
   ): void {
@@ -177,7 +177,7 @@ export class NdjsonEditorProvider
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src ${webview.cspSource} 'unsafe-inline'; script-src 'nonce-${nonce}'; font-src ${webview.cspSource} data:;">
   <link href="${agGridCssUri}" rel="stylesheet">
   <link href="${styleUri}" rel="stylesheet">
-  <title>NDJSON Excel Viewer</title>
+  <title>JSONL Excel Viewer</title>
 </head>
 <body>
   <div id="toolbar">

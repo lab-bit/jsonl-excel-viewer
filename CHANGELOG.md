@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.2.0 - Rename to JSONL Excel Viewer
+
+- **Breaking:** Extension renamed from "NDJSON Excel Viewer" to "JSONL Excel Viewer" (NDJSON was deprecated in 2023 in favor of JSONL).
+- Extension ID is now `jsonl-excel-viewer`. View type is `jsonlExcelViewer.editor`.
+- `.ndjson` and `.jsonl` files are still both supported.
+
 ## 0.1.0 - Initial release
 
 - Spreadsheet-like grid view for `.ndjson` and `.jsonl` files

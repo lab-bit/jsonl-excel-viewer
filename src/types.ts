@@ -1,9 +1,9 @@
-/** A single record (one line of NDJSON) */
-export type NdjsonRecord = Record<string, unknown>;
+/** A single record (one line of JSONL) */
+export type JsonlRecord = Record<string, unknown>;
 
 /** Parse result */
 export interface ParseResult {
-  records: NdjsonRecord[];
+  records: JsonlRecord[];
   errors: ParseError[];
 }
 
@@ -37,7 +37,7 @@ export interface CellEdit {
 /** Messages from Extension Host to Webview */
 export type ExtToWebviewMessage =
   | { type: 'init'; columns: ColumnDef[]; totalRows: number }
-  | { type: 'data-chunk'; startIndex: number; rows: NdjsonRecord[] }
+  | { type: 'data-chunk'; startIndex: number; rows: JsonlRecord[] }
   | { type: 'apply-edit'; edit: CellEdit }
   | { type: 'theme-changed'; theme: string };
 
